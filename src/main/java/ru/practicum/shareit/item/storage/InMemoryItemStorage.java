@@ -94,7 +94,7 @@ public class InMemoryItemStorage implements ItemStorage {
         if (existingItem.getOwner().getId() != userId) {
             throw new NotOwnerException("Only item owner can delete it");
         }
-        items.remove(existingItem);
+        items.remove(itemId);
     }
 
     private long generatedId() {
