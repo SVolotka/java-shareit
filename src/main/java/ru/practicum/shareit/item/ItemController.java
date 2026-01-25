@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -26,35 +27,36 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long userId, @RequestBody @Valid ItemDto itemDto) {
-        log.info("Create item request received: {}", itemDto);
-        ItemDto createdItem = itemService.create(itemDto, userId);
+    public ItemResponseDto create(@RequestHeader("X-Sharer-User-Id") long userId,
+                                  @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        log.info("Create item request received: {}", itemRequestDto);
+        ItemResponseDto createdItem = itemService.create(itemRequestDto, userId);
         log.info("Item created successfully");
         return createdItem;
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId,
-                          @RequestBody ItemDto itemDto) {
+    public ItemResponseDto update(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId,
+                                  @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Update item request received: id = {}", itemId);
-        log.debug("Update item details: {}", itemDto);
-        ItemDto updatedItem = itemService.update(itemDto, itemId, userId);
+        log.debug("Update item details: {}", itemRequestDto);
+        ItemResponseDto updatedItem = itemService.update(itemRequestDto, itemId, userId);
         log.info("Item updated successfully");
         return updatedItem;
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto get(@PathVariable long itemId) {
+    public ItemResponseDto get(@PathVariable long itemId) {
         log.info("Get item request received: id = {}", itemId);
-        ItemDto existingItem = itemService.get(itemId);
+        ItemResponseDto existingItem = itemService.get(itemId);
         log.info("Item founded successfully");
         return existingItem;
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemResponseDto> getItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Get items by user request received: userId = {}", userId);
-        List<ItemDto> foundedItems = itemService.getItemsByUser(userId);
+        List<ItemResponseDto> foundedItems = itemService.getItemsByUser(userId);
         log.info("Items founded successfully");
         return foundedItems;
     }
@@ -67,9 +69,9 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam(value = "text", required = false) String searchText) {
+    public List<ItemResponseDto> search(@RequestParam(value = "text", required = false) String searchText) {
         log.info("Search request received: text = {}", searchText);
-        List<ItemDto> items = itemService.searchItems(searchText);
+        List<ItemResponseDto> items = itemService.searchItems(searchText);
         log.info("Search completed successfully");
         return items;
     }

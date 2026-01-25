@@ -2,11 +2,8 @@ package ru.practicum.shareit.item.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.exception.ItemNotFoundException;
-import ru.practicum.shareit.item.exception.NotOwnerException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.InMemoryUserStorage;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,41 +14,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InMemoryItemStorage implements ItemStorage {
     private long counter = 1;
-
-    Map<Long, Item> items = new HashMap<>();
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final Map<Long, Item> items = new HashMap<>();
 
     @Override
-    public Item create(Item item, long userId) {
+    public Item create(Item item) {
         item.setId(generatedId());
-        User owner = inMemoryUserStorage.get(userId);
-
-        item.setOwner(owner);
         items.put(item.getId(), item);
         return item;
     }
 
     @Override
-    public Item update(Item item, long itemId, long userId) {
-        Item existingItem = get(itemId);
-        inMemoryUserStorage.get(userId);
-
-        if (existingItem.getOwner().getId() != userId) {
-            throw new NotOwnerException("Only item owner can modify it");
-        }
-
-        if (item.getName() != null) {
-            existingItem.setName(item.getName());
-        }
-
-        if (item.getDescription() != null) {
-            existingItem.setDescription(item.getDescription());
-        }
-
-        if (item.getAvailable() != null) {
-            existingItem.setAvailable(item.getAvailable());
-        }
-        return existingItem;
+    public Item update(Item item, long itemId) {
+        items.put(itemId, item);
+        return item;
     }
 
     @Override
@@ -59,7 +34,7 @@ public class InMemoryItemStorage implements ItemStorage {
         if (items.containsKey(id)) {
             return items.get(id);
         }
-        throw new ItemNotFoundException("Item with id " + id + " not found");
+        throw new NotFoundException("Item with id " + id + " not found");
     }
 
     @Override
@@ -71,10 +46,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public List<Item> find(String searchText) {
-        if (searchText == null || searchText.isBlank()) {
-            return List.of();
-        }
-
         String lowerCaseSearchText = searchText.toLowerCase();
 
         return items.values().stream()
@@ -89,11 +60,6 @@ public class InMemoryItemStorage implements ItemStorage {
 
     @Override
     public void delete(long itemId, long userId) {
-        Item existingItem = get(itemId);
-
-        if (existingItem.getOwner().getId() != userId) {
-            throw new NotOwnerException("Only item owner can delete it");
-        }
         items.remove(itemId);
     }
 
