@@ -2,12 +2,12 @@ package ru.practicum.shareit.item.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,11 +30,8 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item get(long id) {
-        if (items.containsKey(id)) {
-            return items.get(id);
-        }
-        throw new NotFoundException("Item with id " + id + " not found");
+    public Optional<Item> get(long id) {
+        return Optional.ofNullable(items.get(id));
     }
 
     @Override

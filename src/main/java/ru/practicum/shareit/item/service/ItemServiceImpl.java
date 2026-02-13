@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
@@ -23,7 +24,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemResponseDto create(ItemRequestDto itemRequestDto, long userId) {
         Item item = ItemMapper.requestDtoToItem(itemRequestDto);
-        User owner = userStorage.get(userId);
+        User owner = userStorage.get(userId).orElseThrow(() ->
+                new NotFoundException("User with id " + userId + " not found"));
 
         item.setOwner(owner);
         Item createdItem = itemStorage.create(item);
@@ -34,7 +36,8 @@ public class ItemServiceImpl implements ItemService {
     public ItemResponseDto update(ItemRequestDto itemRequestDtoDto, long itemId, long userId) {
         Item item = ItemMapper.requestDtoToItem(itemRequestDtoDto);
 
-        Item existingItem = itemStorage.get(itemId);
+        Item existingItem = itemStorage.get(itemId).orElseThrow(() ->
+                new NotFoundException("Item with id " + itemId + " not found"));
         userStorage.get(userId);
 
         if (existingItem.getOwner().getId() != userId) {
@@ -59,7 +62,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemResponseDto get(long itemId) {
-        Item existingItem = itemStorage.get(itemId);
+        Item existingItem = itemStorage.get(itemId).orElseThrow(() ->
+                new NotFoundException("Item with id " + itemId + " not found"));
+
         return ItemMapper.itemToResponseDto(existingItem);
     }
 
@@ -74,7 +79,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public void delete(long itemId, long userId) {
-        Item existingItem = itemStorage.get(itemId);
+        Item existingItem = itemStorage.get(itemId).orElseThrow(() ->
+                new NotFoundException("Item with id " + itemId + " not found"));
 
         if (existingItem.getOwner().getId() != userId) {
             throw new NotOwnerException("Only item owner can delete it");
