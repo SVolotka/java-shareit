@@ -38,7 +38,10 @@ public class ItemServiceImpl implements ItemService {
 
         Item existingItem = itemStorage.get(itemId).orElseThrow(() ->
                 new NotFoundException("Item with id " + itemId + " not found"));
-        userStorage.get(userId);
+
+        userStorage.get(userId).orElseThrow(() ->
+                new NotFoundException("User with id " + userId + " not found")
+        );
 
         if (existingItem.getOwner().getId() != userId) {
             throw new NotOwnerException("Only item owner can modify it");
