@@ -94,8 +94,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookingsByBooker(long bookerId, BookingState bookingState) {
-        userRepository.findById(bookerId).orElseThrow(() ->
-                new NotFoundException("User with id " + bookerId + " not found"));
+        if (!userRepository.existsById(bookerId)) {
+            throw new NotFoundException("User with id " + bookerId + " not found");
+        }
 
         LocalDateTime now = LocalDateTime.now();
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
@@ -117,9 +118,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookingsByOwner(long ownerId, BookingState bookingState) {
-        userRepository.findById(ownerId).orElseThrow(() ->
-                new NotFoundException("User with id " + ownerId + " not found"));
-
+       if (!userRepository.existsById(ownerId)) {
+           throw new NotFoundException("User with id " + ownerId + " not found");
+       }
 
         LocalDateTime now = LocalDateTime.now();
         Sort sort = Sort.by(Sort.Direction.DESC, "start");

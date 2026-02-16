@@ -55,8 +55,9 @@ public class ItemServiceImpl implements ItemService {
         Item existingItem = itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException("Item with id " + itemId + " not found"));
 
-        userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("User with id " + userId + " not found"));
+        if (!userRepository.existsById(userId)) {
+           throw  new NotFoundException("User with id " + userId + " not found");
+        }
 
         if (!existingItem.getOwner().getId().equals(userId)) {
             throw new NotOwnerException("Only item owner can modify it");

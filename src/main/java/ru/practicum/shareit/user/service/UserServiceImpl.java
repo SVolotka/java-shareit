@@ -32,17 +32,10 @@ public class UserServiceImpl implements UserService {
     public UserDto update(UserDto userDto, long id) {
         User user = UserMapper.dtoToUser(userDto);
         user.setId(id);
-        System.out.println(userDto);
-        System.out.println(id);
-        System.out.println(user);
-
-        System.out.println("до проверки");
 
         User existingUser = userRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("User with id " + id + " not found"));
 
-        System.out.println("после проверки");
-        System.out.println(existingUser);
         if (user.getName() != null) {
             existingUser.setName(user.getName());
         }

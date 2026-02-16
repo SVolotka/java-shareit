@@ -80,7 +80,7 @@ public class ItemController {
     @PostMapping("{itemId}/comment")
     public CommentDto createComment(
             @PathVariable Long itemId,
-            @RequestHeader(value = "X-Sharer-User-Id", required = false) Long userId,
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
             @RequestBody CommentDto commentDto) {
         log.info("Create comment request received: {}", commentDto);
         CommentDto createdComment = itemService.createComment(commentDto, itemId, userId);

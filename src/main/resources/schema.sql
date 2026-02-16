@@ -38,5 +38,13 @@ CREATE TABLE IF NOT EXISTS comments (
   created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
   );
 
+CREATE INDEX IF NOT EXISTS idx_requests_requester_id ON requests(requester_id);
+CREATE INDEX IF NOT EXISTS idx_items_owner_id ON items(owner_id);
+CREATE INDEX IF NOT EXISTS idx_items_request_id ON items(request_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_item_id ON bookings(item_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_booker_id ON bookings(booker_id);
+CREATE INDEX IF NOT EXISTS idx_comments_item_id ON comments(item_id);
+CREATE INDEX IF NOT EXISTS idx_comments_author_id ON comments(author_id);
 
+CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
 
