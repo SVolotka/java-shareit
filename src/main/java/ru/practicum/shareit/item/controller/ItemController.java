@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.item.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
@@ -46,9 +47,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto get(@PathVariable long itemId) {
+    public ItemResponseDto get(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Get item request received: id = {}", itemId);
-        ItemResponseDto existingItem = itemService.get(itemId);
+        ItemResponseDto existingItem = itemService.get(itemId, userId);
         log.info("Item founded successfully");
         return existingItem;
     }
@@ -74,5 +75,16 @@ public class ItemController {
         List<ItemResponseDto> items = itemService.searchItems(searchText);
         log.info("Search completed successfully");
         return items;
+    }
+
+    @PostMapping("{itemId}/comment")
+    public CommentDto createComment(
+            @PathVariable Long itemId,
+            @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+            @RequestBody CommentDto commentDto) {
+        log.info("Create comment request received: {}", commentDto);
+        CommentDto createdComment = itemService.createComment(commentDto, itemId, userId);
+        log.info("Comment created successfully");
+        return createdComment;
     }
 }

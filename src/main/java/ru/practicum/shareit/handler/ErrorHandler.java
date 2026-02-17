@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.exception.NotOwnerException;
 import ru.practicum.shareit.user.exception.EmailAlreadyExistsException;
 
@@ -31,5 +32,15 @@ public class ErrorHandler {
     public ErrorResponse handleNotOwnerException(final NotOwnerException exception) {
         log.warn("User is not the owner of this item: {}", exception.getMessage());
         return ErrorResponse.builder().error(HttpStatus.CONFLICT.value()).description(exception.getMessage()).build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidationException(final ValidationException exception) {
+        log.warn("Validation error: {}", exception.getMessage());
+        return ErrorResponse.builder()
+                .error(HttpStatus.BAD_REQUEST.value())
+                .description(exception.getMessage())
+                .build();
     }
 }
