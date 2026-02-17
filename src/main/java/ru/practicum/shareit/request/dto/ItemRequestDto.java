@@ -1,7 +1,10 @@
 package ru.practicum.shareit.request.dto;
 
-/**
- * TODO Sprint add-item-requests.
- */
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
 public class ItemRequestDto {
+    @NotBlank
+    private String description;
 }

@@ -2,7 +2,8 @@ package ru.practicum.shareit.item.mapper;
 
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoForItemRequest;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -19,7 +20,7 @@ public class ItemMapper {
         return itemResponseDto;
     }
 
-    public static Item requestDtoToItem(ItemRequestDto requestDto) {
+    public static Item requestDtoToItem(ItemDto requestDto) {
         Item item = new Item();
         item.setName(requestDto.getName());
         item.setDescription(requestDto.getDescription());
@@ -39,5 +40,13 @@ public class ItemMapper {
         itemResponseDto.setLastBooking(lastBooking);
         itemResponseDto.setNextBooking(nextBooking);
         return itemResponseDto;
+    }
+
+    public static ItemDtoForItemRequest itemToDtoForItemRequest(Item item) {
+        ItemDtoForItemRequest dtoForItemRequest = new ItemDtoForItemRequest();
+        dtoForItemRequest.setId(item.getId());
+        dtoForItemRequest.setName(item.getName());
+        dtoForItemRequest.setOwnerId(item.getOwner().getId());
+        return dtoForItemRequest;
     }
 }

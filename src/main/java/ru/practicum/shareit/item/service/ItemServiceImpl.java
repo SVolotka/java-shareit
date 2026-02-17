@@ -13,17 +13,20 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.exception.NotOwnerException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,23 +37,32 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
-    public ItemResponseDto create(ItemRequestDto itemRequestDto, long userId) {
-        Item item = ItemMapper.requestDtoToItem(itemRequestDto);
-        User owner = userRepository.findById(userId).orElseThrow(() ->
+    public ItemResponseDto create(ItemDto itemDto, long userId) {
+        Item item = ItemMapper.requestDtoToItem(itemDto);
+        User user = userRepository.findById(userId).orElseThrow(() ->
                 new NotFoundException("User with id " + userId + " not found"));
 
-        item.setOwner(owner);
+        item.setOwner(user);
+
+        if (itemDto.getRequestId() != null) {
+            ItemRequest request = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() ->
+                            new NotFoundException("ItemRequest with id " + itemDto.getRequestId() + " not found"));
+            item.setRequest(request);
+        }
+
         Item createdItem = itemRepository.save(item);
         return ItemMapper.itemToResponseDtoWithOutComments(createdItem);
     }
 
     @Override
     @Transactional
-    public ItemResponseDto update(ItemRequestDto itemRequestDtoDto, long itemId, long userId) {
-        Item item = ItemMapper.requestDtoToItem(itemRequestDtoDto);
+    public ItemResponseDto update(ItemDto itemDtoDto, long itemId, long userId) {
+        Item item = ItemMapper.requestDtoToItem(itemDtoDto);
 
         Item existingItem = itemRepository.findById(itemId).orElseThrow(() ->
                 new NotFoundException("Item with id " + itemId + " not found"));

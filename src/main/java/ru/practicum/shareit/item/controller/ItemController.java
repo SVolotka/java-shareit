@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -29,19 +29,19 @@ public class ItemController {
 
     @PostMapping
     public ItemResponseDto create(@RequestHeader("X-Sharer-User-Id") long userId,
-                                  @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        log.info("Create item request received: {}", itemRequestDto);
-        ItemResponseDto createdItem = itemService.create(itemRequestDto, userId);
+                                  @RequestBody @Valid ItemDto itemDto) {
+        log.info("Create item request received: {}", itemDto);
+        ItemResponseDto createdItem = itemService.create(itemDto, userId);
         log.info("Item created successfully");
         return createdItem;
     }
 
     @PatchMapping("/{itemId}")
     public ItemResponseDto update(@PathVariable long itemId, @RequestHeader("X-Sharer-User-Id") long userId,
-                                  @RequestBody ItemRequestDto itemRequestDto) {
+                                  @RequestBody ItemDto itemDto) {
         log.info("Update item request received: id = {}", itemId);
-        log.debug("Update item details: {}", itemRequestDto);
-        ItemResponseDto updatedItem = itemService.update(itemRequestDto, itemId, userId);
+        log.debug("Update item details: {}", itemDto);
+        ItemResponseDto updatedItem = itemService.update(itemDto, itemId, userId);
         log.info("Item updated successfully");
         return updatedItem;
     }
