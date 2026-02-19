@@ -2,7 +2,9 @@ package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
+@Data
 public class ItemDto {
     @NotBlank(message = "Name cannot be blank")
     private String name;

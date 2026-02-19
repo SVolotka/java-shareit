@@ -1,17 +1,17 @@
 package ru.practicum.shareit.booking.dto;
 
 import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class BookingRequestDto {
-    @NotNull
-    private long itemId;
-    @Future
+    private Long itemId;
+    @FutureOrPresent(message = "Start date must be present or in the future")
     private LocalDateTime start;
-    @Future
+
+    @Future(message = "End date must be in the future")
     private LocalDateTime end;
 }
