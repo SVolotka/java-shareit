@@ -29,11 +29,9 @@ public class ItemRequestJsonTest {
 
     @Test
     void testDeserialize() throws Exception {
-        String jsonContent = """
-                {
-                    "description": "Need a hammer"
-                }
-                """;
+        String jsonContent = "{\n" +
+                "    \"description\": \"Need a hammer\"\n" +
+                "}";
 
         ItemRequestDto dto = json.parse(jsonContent).getObject();
 

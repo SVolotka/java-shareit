@@ -136,10 +136,10 @@ public class UserServiceImplTest {
         firstUser.setEmail("user1@example.com");
         userRepository.save(firstUser);
 
-        User SecondUser = new User();
-        SecondUser.setName("User2");
-        SecondUser.setEmail("user2@example.com");
-        userRepository.save(SecondUser);
+        User secondUser = new User();
+        secondUser.setName("User2");
+        secondUser.setEmail("user2@example.com");
+        userRepository.save(secondUser);
 
         List<UserDto> all = userService.getAll();
 

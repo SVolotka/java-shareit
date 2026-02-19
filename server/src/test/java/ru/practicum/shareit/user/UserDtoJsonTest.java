@@ -33,13 +33,11 @@ public class UserDtoJsonTest {
 
     @Test
     void testDeserialize() throws Exception {
-        String jsonContent = """
-                {
-                 "id": 1,
-                 "name": "John",
-                 "email": "john.doe@mail.com"
-                      }
-                """;
+        String jsonContent = "{\n" +
+                " \"id\": 1,\n" +
+                " \"name\": \"John\",\n" +
+                " \"email\": \"john.doe@mail.com\"\n" +
+                "}";
 
         UserDto userDto = json.parse(jsonContent).getObject();
         assertThat(userDto.getId()).isEqualTo(1L);
