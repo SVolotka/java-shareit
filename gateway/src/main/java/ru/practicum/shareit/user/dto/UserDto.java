@@ -1,0 +1,14 @@
+package ru.practicum.shareit.user.dto;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public class UserDto {
+    private long id;
+    @NotBlank(message = "Name cannot be blank")
+    private String name;
+    @Email(message = "Email should be valid")
+    @NotNull(message = "Email cannot be null")
+    private String email;
+}
