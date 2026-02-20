@@ -15,7 +15,9 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +46,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public ItemRequestResponseDto get(long itemRequestId, long userId) {
         if (!userRepository.existsById(userId)) {
-            throw  new NotFoundException("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
         }
         ItemRequest itemRequest = itemRequestRepository.findById(itemRequestId).orElseThrow(() ->
                 new NotFoundException("ItemRequest with id " + itemRequestId + " not found"));
@@ -55,32 +57,48 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Transactional(readOnly = true)
     public List<ItemRequestResponseDto> getItemRequestsByUser(long userId) {
         if (!userRepository.existsById(userId)) {
-            throw  new NotFoundException("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
         }
 
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterIdOrderByCreatedDesc(userId);
-        return itemRequests.stream()
-                .map(itemRequest -> ItemRequestMapper.itemToResponseDto(
-                        itemRequest, getItemsForRequest(itemRequest.getId())))
-                .collect(Collectors.toList());
+        return convertToDtoWithItems(itemRequests);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ItemRequestResponseDto> getOtherUsersRequests(long userId) {
         if (!userRepository.existsById(userId)) {
-            throw  new NotFoundException("User with id " + userId + " not found");
+            throw new NotFoundException("User with id " + userId + " not found");
         }
 
         List<ItemRequest> itemRequests = itemRequestRepository.findAllByRequesterIdNotOrderByCreatedDesc(userId);
 
-        return itemRequests.stream()
-                .map(itemRequest -> ItemRequestMapper.itemToResponseDto(
-                        itemRequest, getItemsForRequest(itemRequest.getId())))
-                .collect(Collectors.toList());
+        return convertToDtoWithItems(itemRequests);
     }
 
     private List<Item> getItemsForRequest(long requestId) {
         return itemRepository.findAllByRequestId(requestId);
+    }
+
+    private List<ItemRequestResponseDto> convertToDtoWithItems(List<ItemRequest> itemRequests) {
+        if (itemRequests.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> requestIds = itemRequests.stream()
+                .map(ItemRequest::getId)
+                .toList();
+
+        List<Item> items = itemRepository.findAllByRequestIdIn(requestIds);
+
+        Map<Long, List<Item>> itemsByRequestId = items.stream()
+                .collect(Collectors.groupingBy(item -> item.getRequest().getId()));
+
+        return itemRequests.stream()
+                .map(itemRequest -> ItemRequestMapper.itemToResponseDto(
+                        itemRequest,
+                        itemsByRequestId.getOrDefault(itemRequest.getId(), Collections.emptyList())
+                ))
+                .collect(Collectors.toList());
     }
 }
